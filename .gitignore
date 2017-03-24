@@ -1,3 +1,8 @@
+# Emacs
+*~
+*.R#
+*#
+
 # History files
 .Rhistory
 .Rapp.history
