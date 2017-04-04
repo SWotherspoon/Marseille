@@ -309,7 +309,12 @@ dcrwSimulate <- function(fit, fixed=rep(c(TRUE,FALSE,TRUE),c(1,nrow(fit$predicte
   ## Reverse pass - recursively sample with a Kalman/Regression step
   ## starting from x[k0,]
   sample <- function(k0) {
-    x <- ms[k0,] + drop(rnorm(4)%*%chol(Vs[,,k0]))
+    for(r in 1:100) {
+      x <- ms[k0,] + drop(rnorm(4)%*%chol(Vs[,,k0]))
+      if(fixed[k0] || point.check(ts[k0],x[1],x[2])) break
+      ## If fail, return last fixed point
+      if(r==100) return(k0)
+    }
     xs[k0,] <<- x
     for(k in (k0-1):1) {
       ## Kalman gain
