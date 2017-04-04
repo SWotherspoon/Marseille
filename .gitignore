@@ -3,6 +3,10 @@
 *.R#
 *#
 
+# Binaries
+*.o
+*.dll
+
 # History files
 .Rhistory
 .Rapp.history
