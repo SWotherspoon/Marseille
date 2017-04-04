@@ -1,4 +1,4 @@
-# RWalc
+# Marseille
 
 [![Travis-CI Build Status](https://travis-ci.org/SWotherspoon/Marseille.svg?branch=master)](https://travis-ci.org/SWotherspoon/Marseille)
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/SWotherspoon/Marseille?branch=master&svg=true)](https://ci.appveyor.com/project/SWotherspoon/Marseille)
@@ -29,6 +29,6 @@ If you don't have `devtools` installed already, install it first.
 install.packages("devtools")
 ```
 
-RWalc otherwise does not need devtools for normal use.
+Marseille otherwise does not need devtools for normal use.
 
 
