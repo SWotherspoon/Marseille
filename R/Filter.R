@@ -321,9 +321,9 @@ dcrwSimulate <- function(fit, fixed=rep(c(TRUE,FALSE,TRUE),c(1,nrow(fit$predicte
       K <- Vs[,,k]%*%t(A)%*%solve(A%*%Vs[,,k]%*%t(A)+Q)
       ## Mean, variance update
       mu <- ms[k,] + drop(K%*%(x-A%*%ms[k,]))
-      V <- Vs[,,k] - K%*%A%*%Vs[,,k]
-      ##W <- (diag(1,4,4)-K%*%A)
-      ##V <- tcrossprod(W%*%Vs[,,k],W)+tcrossprod(K%*%Q,K)
+      ##V <- Vs[,,k] - K%*%A%*%Vs[,,k]
+      W <- (diag(1,4,4)-K%*%A)
+      V <- tcrossprod(W%*%Vs[,,k],W)+tcrossprod(K%*%Q,K)
       R <- chol(V)
       ## point.check/rejection loop
       for(r in 1:100) {
