@@ -7,7 +7,7 @@
 dcrw(data, subset = rep(TRUE, nrow(data)), tstep = 6/24, nu = 10,
   gamma = 0.5, span = 0.1, verbose = FALSE, optim = c("nlminb",
   "optim"), extrap = FALSE, parameters = NULL, esf = aesfCRAWL(),
-  common.tau = FALSE)
+  theta.zero = FALSE, common.tau = FALSE)
 }
 \arguments{
 \item{data}{A dataframe representing the track (see details)}
@@ -38,6 +38,8 @@ predicted state occurs immediately after the last observation.}
 
 \item{esf}{The error scale factors for the location classes.}
 
+\item{theta.zero}{Should theta be fixed at zero.}
+
 \item{common.tau}{Should a common tau parameter be fitted for
 longitude and latitude.}
 }
@@ -49,6 +51,7 @@ a list with components
   \item{\code{data}}{the input dataframe}
   \item{\code{subset}}{the input subset vector}
   \item{\code{tstep}}{the prediction time step}
+  \item{\code{theta.zero}}{has theta been fixed at zero}
   \item{\code{common.tau}}{has a common tau been fitted for lon and lat}
   \item{\code{opt}}{the object returned by the optimizer}
   \item{\code{tmb}}{the \pkg{TMB} object}

@@ -18,7 +18,7 @@ unwrapLon(lon, lmin = -180)
 a vector of longitudes
 }
 \description{
-Wrappng Locations Around the Dateline
+Wrapping Locations Around the Dateline
 }
 \details{
 These functions wrap and unwrap a sequence of longitudes around

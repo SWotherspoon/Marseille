@@ -5,7 +5,8 @@
 \title{Regressive bridge sampler}
 \usage{
 dcrwSimulate(fit, fixed = rep(c(TRUE, FALSE, TRUE), c(1, nrow(fit$predicted) -
-  2, 1)), fixed.err = NULL, point.check = function(tm, lon, lat) TRUE)
+  2, 1)), fixed.err = NULL, point.check = function(tm, lon, lat) TRUE,
+  delta0 = c(0, 0))
 }
 \arguments{
 \item{fit}{an object returned by \code{dcrw}}
@@ -18,6 +19,8 @@ template path are to be held fixed.}
 \item{point.check}{function that accepts a time, longitude and
 latitude and returns boolean indicating whether the state is
 acceptable.}
+
+\item{delta0}{initial increment}
 }
 \value{
 a dataframe representing the simulated track
