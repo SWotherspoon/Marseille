@@ -160,7 +160,7 @@ dcrw <- function(data,subset=rep(TRUE,nrow(data)),
 
 
 
-##' Wrappng Locations Around the Dateline
+##' Wrapping Locations Around the Dateline
 ##'
 ##' These functions wrap and unwrap a sequence of longitudes around
 ##' the dateline.
@@ -269,23 +269,24 @@ dcrwModel <- function(fit) {
 ##' @param point.check function that accepts a time, longitude and
 ##'   latitude and returns boolean indicating whether the state is
 ##'   acceptable.
+##' @param delta0 initial increment
 ##' @return a dataframe representing the simulated track
 ##'   \item{\code{date}}{prediction times as POSIXct.}
 ##'   \item{\code{lon}}{predicted longitude}
 ##'   \item{\code{lat}}{predicted latitude}
 ##' @importFrom stats rnorm
 ##' @export
-dcrwSimulate <- function(fit, fixed=rep(c(TRUE,FALSE,TRUE),c(1,nrow(fit$predicted)-2,1)),
-                         fixed.err=NULL, point.check=function(tm,lon,lat) TRUE) {
+dcrwSimulate <- function(fit,
+                         fixed=rep(c(TRUE,FALSE,TRUE),c(1,nrow(fit$predicted)-2,1)),
+                         fixed.err=NULL,
+                         point.check=function(tm,lon,lat) TRUE,
+                         delta0 = c(0,0)) {
 
   ## Extract model matrices
   model <- dcrwModel(fit)
   A <- model$A
   Q <- model$Q+diag(1.0E-8,4,4)
   if(is.null(fixed.err)) fixed.err <- Q
-
-  ## First state must be fixed
-  fixed[1] <- TRUE
 
   ## Times and matrix of states
   ts <- fit$predicted$date
@@ -296,8 +297,13 @@ dcrwSimulate <- function(fit, fixed=rep(c(TRUE,FALSE,TRUE),c(1,nrow(fit$predicte
   ms <- xs
   Vs <- array(0,c(nrow(Q),ncol(Q),n))
 
+  ## First state must be fixed
+  fixed[1] <- TRUE
+  xs[1,3:4] <- delta0
+  Vs[,,1] <- fixed.err
+
   ## Forward pass - generate priors from movement model
-  for(k in 1:n)
+  for(k in 2:n)
     if(fixed[k]) {
       ms[k,3:4] <- 0
       Vs[,,k] <- fixed.err
@@ -318,10 +324,12 @@ dcrwSimulate <- function(fit, fixed=rep(c(TRUE,FALSE,TRUE),c(1,nrow(fit$predicte
     xs[k0,] <<- x
     for(k in (k0-1):1) {
       ## Kalman gain
-      K <- Vs[,,k]%*%t(A)%*%solve(A%*%Vs[,,k]%*%t(A)+Q)
+      ## K <- Vs[,,k]%*%t(A)%*%solve(A%*%Vs[,,k]%*%t(A)+Q)
+      W <- A%*%Vs[,,k]
+      K <- crossprod(W,solve(tcrossprod(W,A)+Q))
       ## Mean, variance update
       mu <- ms[k,] + drop(K%*%(x-A%*%ms[k,]))
-      ##V <- Vs[,,k] - K%*%A%*%Vs[,,k]
+      ## V <- Vs[,,k] - K%*%A%*%Vs[,,k]
       W <- (diag(1,4,4)-K%*%A)
       V <- tcrossprod(W%*%Vs[,,k],W)+tcrossprod(K%*%Q,K)
       R <- chol(V)
