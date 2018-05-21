@@ -58,6 +58,7 @@ NULL
 ##'   predicted state occurs immediately after the last observation.
 ##' @param parameters The TMB parameter list.
 ##' @param esf The error scale factors for the location classes.
+##' @param theta.zero Should theta be fixed at zero.
 ##' @param common.tau Should a common tau parameter be fitted for
 ##'   longitude and latitude.
 ##' @return a list with components
@@ -67,6 +68,7 @@ NULL
 ##'   \item{\code{data}}{the input dataframe}
 ##'   \item{\code{subset}}{the input subset vector}
 ##'   \item{\code{tstep}}{the prediction time step}
+##'   \item{\code{theta.zero}}{has theta been fixed at zero}
 ##'   \item{\code{common.tau}}{has a common tau been fitted for lon and lat}
 ##'   \item{\code{opt}}{the object returned by the optimizer}
 ##'   \item{\code{tmb}}{the \pkg{TMB} object}
@@ -77,7 +79,7 @@ NULL
 dcrw <- function(data,subset=rep(TRUE,nrow(data)),
                  tstep=6/24, nu=10, gamma=0.5, span=0.1, verbose=FALSE,
                  optim=c("nlminb","optim"), extrap=FALSE, parameters=NULL,
-                 esf=aesfCRAWL(),common.tau=FALSE) {
+                 esf=aesfCRAWL(),theta.zero=FALSE,common.tau=FALSE) {
 
   optim <- match.arg(optim)
   d <- data[subset,]
@@ -135,7 +137,9 @@ dcrw <- function(data,subset=rep(TRUE,nrow(data)),
   }
 
   ## TMB - create objective function
-  obj <- MakeADFun(tmbdata,parameters,random="x",DLL="Marseille",silent=!verbose)
+  obj <- MakeADFun(tmbdata,parameters,
+                   map=list(theta=factor(if(theta.zero) NA else 1)),
+                   random="x",DLL="Marseille",silent=!verbose)
   obj$env$inner.control$trace <- verbose
   obj$env$tracemgc <- verbose
 
@@ -155,7 +159,8 @@ dcrw <- function(data,subset=rep(TRUE,nrow(data)),
   list(predicted=cbind(date=ts,as.data.frame(rdm)),
        fitted=cbind(date=d$date,as.data.frame(ftd)),
        par=fxd,data=data,subset=subset,tstep=tstep,
-       common.tau=common.tau,opt=opt,tmb=obj)
+       theta.zero=theta.zero,common.tau=common.tau,
+       opt=opt,tmb=obj)
 }
 
 
